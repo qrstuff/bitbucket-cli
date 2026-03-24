@@ -16,7 +16,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-const serviceName = "bkt"
+
 
 const (
 	// EnvToken is the environment variable for runtime token injection.
@@ -114,9 +114,6 @@ type Store struct {
 }
 
 type openOptions struct {
-	allowFile       bool
-	passphrase      string
-	allowedBackends []keyring.BackendType
 	fileDir         string
 }
 
@@ -154,30 +151,7 @@ func Open(opts ...Option) (*Store, error) {
 	return &Store{kr: kr}, nil
 }
 
-// openKeyringWithTimeout opens the keyring with a timeout to prevent hangs
-// when GUI-based keyrings try to show prompts in headless environments.
-func openKeyringWithTimeout(cfg keyring.Config) (keyring.Keyring, error) {
-	type result struct {
-		kr  keyring.Keyring
-		err error
-	}
 
-	ch := make(chan result, 1)
-	go func() {
-		kr, err := keyring.Open(cfg)
-		ch <- result{kr, err}
-	}()
-
-	ctx, cancel := context.WithTimeout(context.Background(), keyringTimeout())
-	defer cancel()
-
-	select {
-	case res := <-ch:
-		return res.kr, res.err
-	case <-ctx.Done():
-		return nil, ErrKeyringTimeout
-	}
-}
 
 // Set writes a secret value.
 func (s *Store) Set(key, value string) error {
