@@ -94,22 +94,10 @@ release:
 
     **Full Changelog**: https://github.com/qrstuff/bitbucket-cli/compare/{{ .PreviousTag }}...{{ .Tag }}
 
-    ### Homebrew (macOS/Linux)
-    ```bash
-    brew install qrstuff/tap/bitbucket-cli
-    ```
-
-    ### Scoop (Windows)
-    ```powershell
-    scoop bucket add qrstuff https://github.com/qrstuff/scoop-bucket
-    scoop install bitbucket-cli
-    ```
-
     ### Go Install
     ```bash
     go install github.com/qrstuff/bitbucket-cli/cmd/bkt@{{ .Tag }}
     ```
-
     ### Binary Downloads
     Pick the archive for your platform from the assets below.
 
@@ -122,44 +110,4 @@ sboms:
       - "-o"
       - "cyclonedx-json=$document"
 
-nfpms:
-  - id: deb
-    package_name: bkt
-    file_name_template: "bkt_{{ .Version }}_{{ .Arch }}"
-    formats: [deb]
-    maintainer: Aviv Sinai <qrstuff@gmail.com>
-    description: Bitbucket CLI
-    homepage: https://github.com/qrstuff/bitbucket-cli
-    license: MIT
 
-brews:
-  - name: bitbucket-cli
-    repository:
-      owner: qrstuff
-      name: homebrew-tap
-      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
-    directory: Formula
-    homepage: https://github.com/qrstuff/bitbucket-cli
-    description: "CLI for Bitbucket Cloud - manage repos, PRs, and pipelines from the terminal"
-    license: MIT
-    commit_author:
-      name: github-actions[bot]
-      email: github-actions[bot]@users.noreply.github.com
-    install: |
-      bin.install "bkt"
-    test: |
-      system "#{bin}/bkt", "version"
-
-scoops:
-  - name: bitbucket-cli
-    repository:
-      owner: qrstuff
-      name: scoop-bucket
-      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
-    directory: bucket
-    homepage: https://github.com/qrstuff/bitbucket-cli
-    description: "CLI for Bitbucket Cloud & Data Center - manage repos, PRs, and pipelines"
-    license: MIT
-    commit_author:
-      name: github-actions[bot]
-      email: github-actions[bot]@users.noreply.github.com
