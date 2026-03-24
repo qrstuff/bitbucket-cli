@@ -159,16 +159,8 @@ func loadHostToken(executable, hostKey string, host *config.Host) error {
 		return nil
 	}
 
-	opts := []secret.Option{}
-	if host.AllowInsecureStore {
-		opts = append(opts, secret.WithAllowFileFallback(true))
-	}
-
-	store, err := secret.Open(opts...)
+	store, err := secret.Open()
 	if err != nil {
-		if secret.IsNoKeyringError(err) {
-			return fmt.Errorf("no OS keychain backend available for host %q; rerun `%s auth login %s --allow-insecure-store` or set BKT_ALLOW_INSECURE_STORE=1: %w", hostKey, executable, hostKey, err)
-		}
 		return err
 	}
 

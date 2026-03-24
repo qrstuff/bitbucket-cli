@@ -11,6 +11,7 @@ labels: bug
 ## To reproduce
 
 Steps to reproduce the behavior:
+
 1. ...
 2. ...
 

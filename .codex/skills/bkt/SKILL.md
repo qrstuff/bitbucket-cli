@@ -21,12 +21,12 @@ bkt --version
 
 If the command fails or `bkt` is not found, install it using one of these methods:
 
-| Platform | Command |
-|----------|---------|
-| macOS/Linux | `brew install avivsinai/tap/bitbucket-cli` |
-| Windows | `scoop bucket add avivsinai https://github.com/avivsinai/scoop-bucket && scoop install bitbucket-cli` |
-| Go | `go install github.com/avivsinai/bitbucket-cli/cmd/bkt@latest` |
-| Binary | Download from [GitHub Releases](https://github.com/avivsinai/bitbucket-cli/releases) |
+| Platform    | Command                                                                                               |
+| ----------- | ----------------------------------------------------------------------------------------------------- |
+| macOS/Linux | `brew install avivsinai/tap/bitbucket-cli`                                                            |
+| Windows     | `scoop bucket add avivsinai https://github.com/avivsinai/scoop-bucket && scoop install bitbucket-cli` |
+| Go          | `go install github.com/avivsinai/bitbucket-cli/cmd/bkt@latest`                                        |
+| Binary      | Download from [GitHub Releases](https://github.com/avivsinai/bitbucket-cli/releases)                  |
 
 **Only proceed with `bkt` commands after confirming installation succeeds.**
 
@@ -47,6 +47,7 @@ bkt auth status
 ```
 
 **Bitbucket Cloud Token Requirements:**
+
 - Create an "API token with scopes" (not a general API token)
 - Select **Bitbucket** as the application
 - Required scope: **Account: Read** (`read:user:bitbucket`)
@@ -70,25 +71,25 @@ bkt context use cloud-team
 
 ## Quick Command Reference
 
-| Task | Command |
-|------|---------|
-| List repos | `bkt repo list` |
-| View repo | `bkt repo view <slug>` |
-| Clone repo | `bkt repo clone <slug> --ssh` |
-| Create repo | `bkt repo create <name> --description "..."` |
-| List PRs | `bkt pr list --state OPEN` |
-| View PR | `bkt pr view <id>` |
-| Create PR | `bkt pr create --title "..." --source feature --target main` |
-| Merge PR | `bkt pr merge <id>` |
-| PR checks | `bkt pr checks <id> --wait` |
-| List branches | `bkt branch list` |
-| Create branch | `bkt branch create <name> --from main` |
-| Delete branch | `bkt branch delete <name>` |
-| List issues (Cloud) | `bkt issue list --state open` |
-| Create issue | `bkt issue create -t "Bug title" -k bug` |
-| Webhooks | `bkt webhook list` |
-| Run pipeline | `bkt pipeline run --ref main` |
-| API escape hatch | `bkt api /rest/api/1.0/projects` |
+| Task                | Command                                                      |
+| ------------------- | ------------------------------------------------------------ |
+| List repos          | `bkt repo list`                                              |
+| View repo           | `bkt repo view <slug>`                                       |
+| Clone repo          | `bkt repo clone <slug> --ssh`                                |
+| Create repo         | `bkt repo create <name> --description "..."`                 |
+| List PRs            | `bkt pr list --state OPEN`                                   |
+| View PR             | `bkt pr view <id>`                                           |
+| Create PR           | `bkt pr create --title "..." --source feature --target main` |
+| Merge PR            | `bkt pr merge <id>`                                          |
+| PR checks           | `bkt pr checks <id> --wait`                                  |
+| List branches       | `bkt branch list`                                            |
+| Create branch       | `bkt branch create <name> --from main`                       |
+| Delete branch       | `bkt branch delete <name>`                                   |
+| List issues (Cloud) | `bkt issue list --state open`                                |
+| Create issue        | `bkt issue create -t "Bug title" -k bug`                     |
+| Webhooks            | `bkt webhook list`                                           |
+| Run pipeline        | `bkt pipeline run --ref main`                                |
+| API escape hatch    | `bkt api /rest/api/1.0/projects`                             |
 
 ## Repository Operations
 
@@ -215,8 +216,8 @@ bkt pr list --json | jq '.pull_requests[0].title'
 ## Environment Variables
 
 - `BKT_CONFIG_DIR` — Config directory override
-- `BKT_ALLOW_INSECURE_STORE` — Allow file-based credential storage
-- `BKT_KEYRING_TIMEOUT` — Keyring operation timeout (for example `2m`)
+- `BKT_CREDENTIALS_PATH` — Path to plaintext credentials file (defaults to `~/.bkt/credentials`)
+- `BKT_KEYRING_TIMEOUT` — Timeout for keyring operations
 
 ## References
 

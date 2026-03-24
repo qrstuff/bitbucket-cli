@@ -13,11 +13,13 @@ Bitbucket's model is simpler: inline comments are PR comments with optional loca
 ## Scope — v1
 
 **In scope:**
+
 - Line-targeted inline comments on PR diffs via `--file`, `--from-line`, `--to-line`
 - Cloud and Data Center support
 - Add `Inline`/`Anchor` fields to comment response structs for JSON output
 
 **Out of scope (deferred):**
+
 - File-level comments without line targeting (DC needs diff metadata we don't resolve)
 - Combining `--parent` with inline flags (reply threading already carries location)
 - Both `--from-line` and `--to-line` together (Cloud supports it, DC doesn't map cleanly)
@@ -36,11 +38,11 @@ bkt pr comment 42 --text "Was this intentional?" --file src/handler.go --from-li
 
 ### New Flags
 
-| Flag | Type | Description |
-|------|------|-------------|
-| `--file` | `string` | File path as shown in the diff (repo-relative, forward slashes, no normalization) |
-| `--from-line` | `int` | Line number in the old file (deletion/source side) |
-| `--to-line` | `int` | Line number in the new file (addition/destination side) |
+| Flag          | Type     | Description                                                                       |
+| ------------- | -------- | --------------------------------------------------------------------------------- |
+| `--file`      | `string` | File path as shown in the diff (repo-relative, forward slashes, no normalization) |
+| `--from-line` | `int`    | Line number in the old file (deletion/source side)                                |
+| `--to-line`   | `int`    | Line number in the new file (addition/destination side)                           |
 
 ### Validation Rules
 
@@ -66,18 +68,20 @@ bkt pr comment 42 --text "Was this intentional?" --file src/handler.go --from-li
 Endpoint: `POST /repositories/{workspace}/{repo_slug}/pullrequests/{id}/comments`
 
 **`--to-line N`** (addition/new side):
+
 ```json
 {
-  "content": {"raw": "Comment text"},
-  "inline": {"path": "src/handler.go", "to": 25}
+  "content": { "raw": "Comment text" },
+  "inline": { "path": "src/handler.go", "to": 25 }
 }
 ```
 
 **`--from-line N`** (deletion/old side):
+
 ```json
 {
-  "content": {"raw": "Comment text"},
-  "inline": {"path": "src/handler.go", "from": 10}
+  "content": { "raw": "Comment text" },
+  "inline": { "path": "src/handler.go", "from": 10 }
 }
 ```
 
@@ -86,18 +90,30 @@ Endpoint: `POST /repositories/{workspace}/{repo_slug}/pullrequests/{id}/comments
 Endpoint: `POST /rest/api/1.0/projects/{project}/repos/{repo}/pull-requests/{id}/comments`
 
 **`--to-line N`** (addition/new side):
+
 ```json
 {
   "text": "Comment text",
-  "anchor": {"path": "src/handler.go", "line": 25, "lineType": "ADDED", "fileType": "TO"}
+  "anchor": {
+    "path": "src/handler.go",
+    "line": 25,
+    "lineType": "ADDED",
+    "fileType": "TO"
+  }
 }
 ```
 
 **`--from-line N`** (deletion/old side):
+
 ```json
 {
   "text": "Comment text",
-  "anchor": {"path": "src/handler.go", "line": 10, "lineType": "REMOVED", "fileType": "FROM"}
+  "anchor": {
+    "path": "src/handler.go",
+    "line": 10,
+    "lineType": "REMOVED",
+    "fileType": "FROM"
+  }
 }
 ```
 
@@ -163,6 +179,7 @@ Body construction: existing `text` + `parent` logic, plus conditionally add `anc
 Add location fields to comment structs for JSON output:
 
 **Cloud** — add `Inline` to `PullRequestComment`:
+
 ```go
 Inline *struct {
     Path string `json:"path"`
@@ -172,6 +189,7 @@ Inline *struct {
 ```
 
 **DC** — add `Anchor` to `PullRequestComment`:
+
 ```go
 Anchor *struct {
     Path     string `json:"path"`
@@ -188,6 +206,7 @@ Enhancing `bkt pr comments` to display inline location data is deferred. The str
 ## Call Site Audit
 
 `CommentPullRequest` is called from exactly two sites:
+
 - `pkg/cmd/pr/pr.go:1749` (DC path in `runComment`)
 - `pkg/cmd/pr/pr.go:1773` (Cloud path in `runComment`)
 
@@ -197,13 +216,14 @@ The create call continues to return `error` only (no response body). The struct 
 
 ## Files Changed
 
-| File | Change |
-|------|--------|
-| `pkg/cmd/pr/pr.go` | Add `File`, `FromLine`, `ToLine` to `commentOptions`; register flags; add validation; pass to client |
-| `pkg/bbcloud/pullrequests.go` | Refactor `CommentPullRequest` to accept `CommentOptions`; add `inline` body logic; add `Inline` to `PullRequestComment` |
-| `pkg/bbdc/pullrequests.go` | Refactor `CommentPullRequest` to accept `CommentOptions`; add `anchor` body logic; add `Anchor` to `PullRequestComment` |
-| `pkg/bbcloud/pullrequests_test.go` | Add tests for inline comment creation (Cloud) |
-| `pkg/bbdc/pullrequests_test.go` | Add tests for anchor comment creation (DC) |
+| File                               | Change                                                                                                                  |
+| ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `pkg/cmd/pr/pr.go`                 | Add `File`, `FromLine`, `ToLine` to `commentOptions`; register flags; add validation; pass to client                    |
+| `pkg/bbcloud/pullrequests.go`      | Refactor `CommentPullRequest` to accept `CommentOptions`; add `inline` body logic; add `Inline` to `PullRequestComment` |
+| `pkg/bbdc/pullrequests.go`         | Refactor `CommentPullRequest` to accept `CommentOptions`; add `anchor` body logic; add `Anchor` to `PullRequestComment` |
+| `pkg/bbcloud/pullrequests_test.go` | Add tests for inline comment creation (Cloud)                                                                           |
+| `pkg/bbdc/pullrequests_test.go`    | Add tests for anchor comment creation (DC)                                                                              |
+
 ## Testing Strategy
 
 - Table-driven tests for both Cloud and DC `CommentPullRequest` with inline options

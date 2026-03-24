@@ -9,9 +9,11 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/99designs/keyring"
+	"gopkg.in/yaml.v3"
 )
 
 const serviceName = "bkt"
@@ -21,11 +23,9 @@ const (
 	// When set, it bypasses the keyring entirely.
 	EnvToken = "BKT_TOKEN"
 
-	envAllowInsecure = "BKT_ALLOW_INSECURE_STORE"
-	envPassphrase    = "BKT_KEYRING_PASSPHRASE"
-	envTimeout       = "BKT_KEYRING_TIMEOUT"
-	envBackend       = "KEYRING_BACKEND"
-	envFileDir       = "KEYRING_FILE_DIR"
+	envCredentialsPath = "BKT_CREDENTIALS_PATH"
+	envBackend         = "KEYRING_BACKEND"
+	envTimeout         = "BKT_KEYRING_TIMEOUT"
 )
 
 const (
@@ -105,9 +105,6 @@ func parseTimeoutEnv(raw string) (time.Duration, bool) {
 }
 
 func timeoutHint() string {
-	if IsHeadless() {
-		return fmt.Sprintf("keyring prompt may be blocked (headless/SSH environment?). Use --allow-insecure-store or set %s=1", envAllowInsecure)
-	}
 	return fmt.Sprintf("keyring prompt may need more time. Increase timeout via %s (e.g. 60s or 2m)", envTimeout)
 }
 
@@ -126,73 +123,34 @@ type openOptions struct {
 // Option customises how the secret store is opened.
 type Option func(*openOptions)
 
-// WithAllowFileFallback permits the encrypted file backend when no native
-// keyring backend is available.
-func WithAllowFileFallback(enable bool) Option {
+// WithCredentialsPath sets the file for the plaintext store.
+func WithCredentialsPath(path string) Option {
 	return func(o *openOptions) {
-		o.allowFile = enable
-	}
-}
-
-// WithPassphrase supplies a passphrase for the encrypted file backend.
-func WithPassphrase(pass string) Option {
-	return func(o *openOptions) {
-		if pass != "" {
-			o.passphrase = pass
+		if path != "" {
+			o.fileDir = path
 		}
 	}
 }
 
-// WithFileDir sets the directory for the encrypted file backend.
-func WithFileDir(dir string) Option {
-	return func(o *openOptions) {
-		if dir != "" {
-			o.fileDir = dir
-		}
-	}
-}
-
-// Open initialises the keyring-backed secret store.
+// Open initialises the plaintext file-based secret store by default.
 func Open(opts ...Option) (*Store, error) {
-	cfg := keyring.Config{
-		ServiceName: serviceName,
-	}
-
 	settings := openOptions{}
 
-	if envEnabled(os.Getenv(envAllowInsecure)) {
-		settings.allowFile = true
-	}
-	if pass := strings.TrimSpace(os.Getenv(envPassphrase)); pass != "" {
-		settings.passphrase = pass
-	}
-	if dir := strings.TrimSpace(os.Getenv(envFileDir)); dir != "" {
-		settings.fileDir = dir
+	if path := strings.TrimSpace(os.Getenv(envCredentialsPath)); path != "" {
+		settings.fileDir = path
 	}
 
 	for _, opt := range opts {
 		opt(&settings)
 	}
 
-	cfg.AllowedBackends = resolveAllowedBackends(settings)
-
-	if usesFileBackend(cfg.AllowedBackends) {
-		if err := configureFileBackend(&cfg, settings); err != nil {
-			return nil, err
-		}
+	if settings.fileDir == "" {
+		settings.fileDir = defaultCredentialsPath()
 	}
 
-	kr, err := openKeyringWithTimeout(cfg)
-	if err != nil {
-		if errors.Is(err, ErrKeyringTimeout) {
-			return nil, fmt.Errorf("open keyring: %w; %s", err, timeoutHint())
-		}
-		if errors.Is(err, keyring.ErrNoAvailImpl) && !usesFileBackend(cfg.AllowedBackends) {
-			return nil, fmt.Errorf("open keyring: %w (set %s=1 or rerun with --allow-insecure-store to permit encrypted file fallback)", err, envAllowInsecure)
-		}
-		return nil, fmt.Errorf("open keyring: %w", err)
-	}
-
+	// Use the plaintext keyring by default as requested.
+	// This avoids library-based keyring issues on headless servers.
+	kr := &plaintextKeyring{path: settings.fileDir}
 	return &Store{kr: kr}, nil
 }
 
@@ -299,126 +257,133 @@ func TokenKey(hostKey string) string {
 // IsNoKeyringError reports whether the error indicates that no native keyring
 // backend is available on the system.
 func IsNoKeyringError(err error) bool {
-	return errors.Is(err, keyring.ErrNoAvailImpl)
+	return false // plaintext always works if file is writable
 }
 
-func resolveAllowedBackends(opts openOptions) []keyring.BackendType {
-	if len(opts.allowedBackends) > 0 {
-		return opts.allowedBackends
+func defaultCredentialsPath() string {
+	if path := os.Getenv(envCredentialsPath); path != "" {
+		return path
 	}
-
-	if backendEnv := strings.TrimSpace(os.Getenv(envBackend)); backendEnv != "" {
-		return parseBackendList(backendEnv, opts.allowFile)
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return ""
 	}
-
-	backends := defaultBackends()
-	if opts.allowFile {
-		backends = append(backends, keyring.FileBackend)
-	}
-	return backends
+	// Default to project-specific dir in home
+	return filepath.Join(home, ".bkt", "credentials")
 }
 
-func defaultBackends() []keyring.BackendType {
-	switch runtime.GOOS {
-	case "darwin":
-		return []keyring.BackendType{keyring.KeychainBackend}
-	case "windows":
-		return []keyring.BackendType{keyring.WinCredBackend}
-	default:
-		// In headless environments (SSH without X11, containers, etc.),
-		// skip GUI-based backends that would hang waiting for unlock prompts.
-		if IsHeadless() {
-			return []keyring.BackendType{
-				keyring.KeyCtlBackend,
-				keyring.PassBackend,
-			}
-		}
-		return []keyring.BackendType{
-			keyring.SecretServiceBackend,
-			keyring.KWalletBackend,
-			keyring.KeyCtlBackend,
-			keyring.PassBackend,
-		}
-	}
+type plaintextKeyring struct {
+	path string
+	mu   sync.RWMutex
 }
 
-func parseBackendList(raw string, allowFile bool) []keyring.BackendType {
-	parts := strings.Split(raw, ",")
-	var backends []keyring.BackendType
-	for _, part := range parts {
-		switch strings.TrimSpace(strings.ToLower(part)) {
-		case "keychain":
-			backends = append(backends, keyring.KeychainBackend)
-		case "wincred":
-			backends = append(backends, keyring.WinCredBackend)
-		case "secret-service", "secretservice":
-			backends = append(backends, keyring.SecretServiceBackend)
-		case "kwallet":
-			backends = append(backends, keyring.KWalletBackend)
-		case "keyctl":
-			backends = append(backends, keyring.KeyCtlBackend)
-		case "pass":
-			backends = append(backends, keyring.PassBackend)
-		case "file":
-			backends = append(backends, keyring.FileBackend)
+func (p *plaintextKeyring) Get(key string) (keyring.Item, error) {
+	p.mu.RLock()
+	defer p.mu.RUnlock()
+
+	data, err := os.ReadFile(p.path)
+	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return keyring.Item{}, keyring.ErrKeyNotFound
 		}
+		return keyring.Item{}, err
 	}
-	if !allowFile {
-		filtered := backends[:0]
-		for _, backend := range backends {
-			if backend == keyring.FileBackend {
-				continue
-			}
-			filtered = append(filtered, backend)
-		}
-		backends = filtered
+
+	var secrets map[string]string
+	if err := yaml.Unmarshal(data, &secrets); err != nil {
+		return keyring.Item{}, fmt.Errorf("decode credentials: %w", err)
 	}
-	return backends
+
+	val, ok := secrets[key]
+	if !ok {
+		return keyring.Item{}, keyring.ErrKeyNotFound
+	}
+
+	return keyring.Item{
+		Key:  key,
+		Data: []byte(val),
+	}, nil
 }
 
-func configureFileBackend(cfg *keyring.Config, opts openOptions) error {
-	passphrase := opts.passphrase
-	if passphrase == "" {
-		if pwd := os.Getenv("KEYRING_FILE_PASSWORD"); pwd != "" {
-			passphrase = pwd
-		} else if pwd := os.Getenv("KEYRING_PASSWORD"); pwd != "" {
-			passphrase = pwd
-		}
+func (p *plaintextKeyring) Set(item keyring.Item) error {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
+	if err := os.MkdirAll(filepath.Dir(p.path), 0700); err != nil {
+		return err
 	}
 
-	switch {
-	case passphrase != "":
-		cfg.FilePasswordFunc = keyring.FixedStringPrompt(passphrase)
-	case IsHeadless():
-		return fmt.Errorf(
-			"file backend requires a passphrase in headless environments; "+
-				"set %s (or KEYRING_FILE_PASSWORD) or use %s to bypass the keyring entirely",
-			envPassphrase, EnvToken,
-		)
-	default:
-		cfg.FilePasswordFunc = keyring.TerminalPrompt
+	secrets := make(map[string]string)
+	data, err := os.ReadFile(p.path)
+	if err == nil {
+		_ = yaml.Unmarshal(data, &secrets)
 	}
 
-	dir := opts.fileDir
-	if dir == "" {
-		if userDir, err := os.UserConfigDir(); err == nil {
-			dir = filepath.Join(userDir, serviceName, "secrets")
-		}
+	secrets[item.Key] = string(item.Data)
+	data, err = yaml.Marshal(secrets)
+	if err != nil {
+		return err
 	}
 
-	if dir != "" {
-		cfg.FileDir = dir
-	}
-	return nil
+	return os.WriteFile(p.path, data, 0600)
 }
 
-func usesFileBackend(backends []keyring.BackendType) bool {
-	for _, backend := range backends {
-		if backend == keyring.FileBackend {
-			return true
+func (p *plaintextKeyring) Remove(key string) error {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
+	data, err := os.ReadFile(p.path)
+	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return nil
 		}
+		return err
 	}
-	return false
+
+	var secrets map[string]string
+	if err := yaml.Unmarshal(data, &secrets); err != nil {
+		return err
+	}
+
+	if _, ok := secrets[key]; !ok {
+		return nil
+	}
+
+	delete(secrets, key)
+	data, err = yaml.Marshal(secrets)
+	if err != nil {
+		return err
+	}
+
+	return os.WriteFile(p.path, data, 0600)
+}
+
+func (p *plaintextKeyring) GetMetadata(key string) (keyring.Metadata, error) {
+	return keyring.Metadata{}, nil
+}
+
+func (p *plaintextKeyring) Keys() ([]string, error) {
+	p.mu.RLock()
+	defer p.mu.RUnlock()
+
+	data, err := os.ReadFile(p.path)
+	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	var secrets map[string]string
+	if err := yaml.Unmarshal(data, &secrets); err != nil {
+		return nil, err
+	}
+
+	keys := make([]string, 0, len(secrets))
+	for k := range secrets {
+		keys = append(keys, k)
+	}
+	return keys, nil
 }
 
 func envEnabled(raw string) bool {

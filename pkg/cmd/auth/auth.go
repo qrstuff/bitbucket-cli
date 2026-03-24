@@ -75,7 +75,6 @@ func newLoginCmd(f *cmdutil.Factory) *cobra.Command {
 	cmd.Flags().StringVar(&opts.Kind, "kind", opts.Kind, "Bitbucket deployment kind (dc or cloud)")
 	cmd.Flags().StringVar(&opts.Username, "username", "", "Username (DC: PAT owner, Cloud: Atlassian email for API tokens)")
 	cmd.Flags().StringVar(&opts.Token, "token", "", "Authentication token (DC: PAT, Cloud: API token). WARNING: visible in process list and shell history; prefer the interactive prompt")
-	cmd.Flags().BoolVar(&opts.AllowInsecureStore, "allow-insecure-store", false, "Allow encrypted fallback secret storage when no OS keychain is available")
 	cmd.Flags().BoolVar(&opts.AllowHTTP, "allow-http", false, "Allow http:// URLs for login even though credentials will be sent in plaintext")
 	cmd.Flags().BoolVarP(&opts.Web, "web", "w", false, "Open browser to create token, then prompt for credentials")
 
@@ -201,10 +200,9 @@ func runLogin(cmd *cobra.Command, f *cmdutil.Factory, opts *loginOptions) error 
 		}
 
 		cfg.SetHost(hostKey, &config.Host{
-			Kind:               "dc",
-			BaseURL:            baseURL,
-			Username:           opts.Username,
-			AllowInsecureStore: opts.AllowInsecureStore,
+			Kind:     "dc",
+			BaseURL:  baseURL,
+			Username: opts.Username,
 		})
 
 		if err := cfg.Save(); err != nil {
@@ -306,10 +304,9 @@ func runLogin(cmd *cobra.Command, f *cmdutil.Factory, opts *loginOptions) error 
 		}
 
 		cfg.SetHost(hostKey, &config.Host{
-			Kind:               "cloud",
-			BaseURL:            apiURL,
-			Username:           opts.Username,
-			AllowInsecureStore: opts.AllowInsecureStore,
+			Kind:     "cloud",
+			BaseURL:  apiURL,
+			Username: opts.Username,
 		})
 
 		if err := cfg.Save(); err != nil {
@@ -557,17 +554,11 @@ func runLogout(cmd *cobra.Command, f *cmdutil.Factory, opts *logoutOptions) erro
 	return nil
 }
 
-func storeHostToken(hostKey, token string, allowInsecure bool) error {
-	opts := []secret.Option{}
-	if allowInsecure {
-		opts = append(opts, secret.WithAllowFileFallback(true))
-	}
-
-	store, err := secret.Open(opts...)
+func storeHostToken(hostKey, token string, _ bool) error {
+	store, err := secret.Open()
 	if err != nil {
 		return err
 	}
-
 	return store.Set(secret.TokenKey(hostKey), token)
 }
 
@@ -576,12 +567,7 @@ func deleteHostToken(hostKey string, host *config.Host) error {
 		return fmt.Errorf("host %q not configured", hostKey)
 	}
 
-	opts := []secret.Option{}
-	if host.AllowInsecureStore {
-		opts = append(opts, secret.WithAllowFileFallback(true))
-	}
-
-	store, err := secret.Open(opts...)
+	store, err := secret.Open()
 	if err != nil {
 		return err
 	}

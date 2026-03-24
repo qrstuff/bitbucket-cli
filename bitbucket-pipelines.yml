@@ -42,7 +42,7 @@ pipelines:
           - step: *lint
 
   pull-requests:
-    '**':
+    "**":
       - parallel:
           - step: *build
           - step: *test

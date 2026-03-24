@@ -15,6 +15,7 @@
 ### Task 1: Refactor Cloud CommentPullRequest to CommentOptions
 
 **Files:**
+
 - Modify: `pkg/bbcloud/pullrequests.go:354-384`
 - Modify: `pkg/bbcloud/pullrequests_test.go:311-404`
 
@@ -81,6 +82,7 @@ func (c *Client) CommentPullRequest(ctx context.Context, workspace, repoSlug str
 Update all callers in `pkg/bbcloud/pullrequests_test.go`. Replace every `client.CommentPullRequest(ctx, ws, repo, id, text, parentID)` with `client.CommentPullRequest(ctx, ws, repo, id, bbcloud.CommentOptions{Text: text, ParentID: parentID})`.
 
 Affected tests:
+
 - `TestCommentPullRequest` (line 321): `bbcloud.CommentOptions{Text: "LGTM"}`
 - `TestCommentPullRequestValidation` (line 361): `bbcloud.CommentOptions{Text: tt.text}`
 - `TestCommentPullRequestWithParent` (line 375): `bbcloud.CommentOptions{Text: "reply", ParentID: 42}`
@@ -195,6 +197,7 @@ git commit -m "feat(cloud): refactor CommentPullRequest to CommentOptions with i
 ### Task 2: Refactor DC CommentPullRequest to CommentOptions
 
 **Files:**
+
 - Modify: `pkg/bbdc/pullrequests.go:189-209`
 - Modify: `pkg/bbdc/pullrequests_test.go:454-534`
 
@@ -256,6 +259,7 @@ func (c *Client) CommentPullRequest(ctx context.Context, projectKey, repoSlug st
 Update all callers in `pkg/bbdc/pullrequests_test.go`. Replace every `client.CommentPullRequest(ctx, proj, repo, id, text, parentID)` with `client.CommentPullRequest(ctx, proj, repo, id, bbdc.CommentOptions{Text: text, ParentID: parentID})`.
 
 Affected tests:
+
 - `TestCommentPullRequest` (line 464): `bbdc.CommentOptions{Text: "LGTM"}`
 - `TestCommentPullRequestWithParent` (line 486): `bbdc.CommentOptions{Text: "reply", ParentID: 42}`
 - `TestCommentPullRequestWithoutParent` (line 507): `bbdc.CommentOptions{Text: "top-level"}`
@@ -376,6 +380,7 @@ git commit -m "feat(dc): refactor CommentPullRequest to CommentOptions with anch
 ### Task 3: Add CLI flags, validation, and wire to clients
 
 **Files:**
+
 - Modify: `pkg/cmd/pr/pr.go:1685-1785`
 
 - [ ] **Step 1: Add fields to commentOptions struct**
@@ -478,6 +483,7 @@ git commit -m "feat(pr): add --file, --from-line, --to-line flags for inline com
 ### Task 4: Add Inline/Anchor fields to comment response structs
 
 **Files:**
+
 - Modify: `pkg/bbcloud/pullrequests.go:508-523` (Cloud PullRequestComment)
 - Modify: `pkg/bbdc/pullrequests.go:24-31` (DC PullRequestComment)
 

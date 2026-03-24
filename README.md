@@ -117,6 +117,7 @@ bkt auth login https://bitbucket.mycorp.example --username alice --token <PAT>
 ```
 
 Create a **Personal Access Token (PAT)** in Bitbucket Data Center:
+
 1. Go to **Profile picture → Manage account → Personal access tokens**
 2. Click **Create a token**
 3. Grant permissions: **Repository Read**, **Repository Write**, **Project Read**
@@ -133,6 +134,7 @@ bkt auth login https://bitbucket.org --kind cloud --username <email> --token <ap
 ```
 
 Create an **API token with scopes** for Bitbucket Cloud:
+
 1. Go to [Atlassian Account Settings](https://id.atlassian.com/manage-profile/security/api-tokens)
 2. Click **Create and manage API tokens** → **Create API token with scopes**
 3. Name your token and set an expiry date
@@ -163,14 +165,9 @@ Note: For app passwords, use your **Bitbucket username** (not email).
 
 #### Credential storage
 
-Access tokens are stored in your OS keychain (Keychain Access on macOS, Windows Credential Manager, or
-Secret Service/KWallet on Linux) while host metadata lives in
-`$XDG_CONFIG_HOME/bkt/config.yml`. Pass `--allow-insecure-store` (or set
-`BKT_ALLOW_INSECURE_STORE=1`) to permit the encrypted file backend on systems
-without a native keychain.
+Access tokens are stored in plaintext at `~/.bkt/credentials` by default. This ensures compatibility across all environments, including headless servers and containers. You can override the credentials file path via the `BKT_CREDENTIALS_PATH` environment variable.
 
-If your keyring requires an interactive unlock prompt, you can increase the keyring timeout via
-`BKT_KEYRING_TIMEOUT` (for example `BKT_KEYRING_TIMEOUT=2m`).
+If your keyring requires an interactive unlock prompt (on Linux/macOS), you can increase the keyring timeout via `BKT_KEYRING_TIMEOUT` (for example `BKT_KEYRING_TIMEOUT=2m`).
 
 ### 2. Create and activate a context
 

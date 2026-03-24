@@ -6,10 +6,10 @@ name: OSSF Scorecard
 on:
   branch_protection_rule:
   schedule:
-    - cron: '30 2 * * 0'  # Weekly on Sunday at 2:30 AM UTC
+    - cron: "30 2 * * 0" # Weekly on Sunday at 2:30 AM UTC
   push:
     branches: [master]
-  workflow_dispatch:  # Manual trigger
+  workflow_dispatch: # Manual trigger
 
 # Declare default permissions as read only
 permissions: read-all

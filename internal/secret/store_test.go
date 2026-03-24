@@ -1,7 +1,9 @@
 package secret
 
 import (
-	"strings"
+	"errors"
+	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -41,7 +43,7 @@ func TestParseTimeoutEnv(t *testing.T) {
 }
 
 func TestKeyringTimeout_EnvOverride(t *testing.T) {
-	t.Setenv(envTimeout, "2m")
+	t.Setenv("BKT_KEYRING_TIMEOUT", "2m")
 	if got := keyringTimeout(); got != 2*time.Minute {
 		t.Fatalf("got=%v want %v", got, 2*time.Minute)
 	}
@@ -70,48 +72,54 @@ func TestTokenFromEnv(t *testing.T) {
 	}
 }
 
-func TestConfigureFileBackend_HeadlessNoPassphrase(t *testing.T) {
-	// Simulate headless: clear DISPLAY/DBUS, set SSH_TTY.
-	t.Setenv("SSH_TTY", "/dev/pts/0")
-	t.Setenv("DISPLAY", "")
-	t.Setenv("WAYLAND_DISPLAY", "")
-	t.Setenv("DBUS_SESSION_BUS_ADDRESS", "")
-	t.Setenv("CI", "")
-	// Ensure no passphrase env vars are set.
-	t.Setenv(envPassphrase, "")
-	t.Setenv("KEYRING_FILE_PASSWORD", "")
-	t.Setenv("KEYRING_PASSWORD", "")
+func TestPlaintextKeyring(t *testing.T) {
+	tempFile := filepath.Join(t.TempDir(), "credentials.yml")
+	kr := &plaintextKeyring{path: tempFile}
 
-	cfg := &keyring.Config{ServiceName: serviceName}
-	opts := openOptions{allowFile: true}
+	// Test Set
+	err := kr.Set(keyring.Item{Key: "test-key", Data: []byte("test-value")})
+	if err != nil {
+		t.Fatalf("Set failed: %v", err)
+	}
 
-	err := configureFileBackend(cfg, opts)
-	if err == nil {
-		t.Fatal("expected error for headless env without passphrase")
+	// Test Get
+	item, err := kr.Get("test-key")
+	if err != nil {
+		t.Fatalf("Get failed: %v", err)
 	}
-	if !strings.Contains(err.Error(), envPassphrase) {
-		t.Fatalf("error should mention %s, got: %v", envPassphrase, err)
+	if string(item.Data) != "test-value" {
+		t.Fatalf("got %s, want %s", string(item.Data), "test-value")
 	}
-	if !strings.Contains(err.Error(), EnvToken) {
-		t.Fatalf("error should mention %s, got: %v", EnvToken, err)
+
+	// Test Keys
+	keys, err := kr.Keys()
+	if err != nil {
+		t.Fatalf("Keys failed: %v", err)
+	}
+	if len(keys) != 1 || keys[0] != "test-key" {
+		t.Fatalf("unexpected keys: %v", keys)
+	}
+
+	// Test Remove
+	err = kr.Remove("test-key")
+	if err != nil {
+		t.Fatalf("Remove failed: %v", err)
+	}
+	_, err = kr.Get("test-key")
+	if !errors.Is(err, keyring.ErrKeyNotFound) {
+		t.Fatalf("expected ErrKeyNotFound, got %v", err)
 	}
 }
 
-func TestConfigureFileBackend_HeadlessWithPassphrase(t *testing.T) {
-	// Simulate headless with passphrase provided.
-	t.Setenv("SSH_TTY", "/dev/pts/0")
-	t.Setenv("DISPLAY", "")
-	t.Setenv("WAYLAND_DISPLAY", "")
-	t.Setenv("DBUS_SESSION_BUS_ADDRESS", "")
-
-	cfg := &keyring.Config{ServiceName: serviceName}
-	opts := openOptions{allowFile: true, passphrase: "test-pass"}
-
-	err := configureFileBackend(cfg, opts)
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
+func TestStore_DefaultPath(t *testing.T) {
+	home, _ := os.UserHomeDir()
+	want := filepath.Join(home, ".bkt", "credentials")
+	if got := defaultCredentialsPath(); got != want {
+		t.Fatalf("got %s, want %s", got, want)
 	}
-	if cfg.FilePasswordFunc == nil {
-		t.Fatal("FilePasswordFunc should be set")
+
+	t.Setenv(envCredentialsPath, "/tmp/special-creds")
+	if got := defaultCredentialsPath(); got != "/tmp/special-creds" {
+		t.Fatalf("got %s, want %s", got, "/tmp/special-creds")
 	}
 }

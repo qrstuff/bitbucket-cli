@@ -5,6 +5,7 @@ Complete command reference for `bkt`. Run `bkt <command> --help` for details.
 ## Authentication
 
 ### Login
+
 ```bash
 # Data Center - guided flow
 bkt auth login https://bitbucket.example.com --web
@@ -20,20 +21,22 @@ bkt auth login https://bitbucket.org --kind cloud --username <email> --token <ap
 ```
 
 Options:
+
 - `--kind` — Deployment type: `dc` (default) or `cloud`
 - `--username` — Username (DC: PAT owner, Cloud: Atlassian email)
 - `--token` — Authentication token
 - `--web` — Open browser to create token
-- `--allow-insecure-store` — Allow encrypted file fallback
 
 **Bitbucket Cloud Token Requirements:**
 When using `--kind cloud`, create an API token with scopes at Atlassian:
+
 - Select "Bitbucket" as the application
 - Required: Account: Read
 - Recommended: Repositories (Read/Write), Pull requests (Read/Write)
 - Optional: Issues (Read/Write)
 
 ### Status and Logout
+
 ```bash
 bkt auth status                           # Show configured hosts and contexts
 bkt auth logout <host>                    # Remove stored credentials
@@ -59,6 +62,7 @@ bkt context delete old-context
 ```
 
 Options for `context create`:
+
 - `--host` — Host key or base URL (required)
 - `--project` — Default project key (DC, required for DC)
 - `--workspace` — Default workspace (Cloud, required for Cloud)
@@ -68,6 +72,7 @@ Options for `context create`:
 ## Repository Commands
 
 ### List and View
+
 ```bash
 bkt repo list                             # List repos in default project/workspace
 bkt repo list --limit 50
@@ -79,6 +84,7 @@ bkt repo view platform-api --project DATA
 ```
 
 ### Create
+
 ```bash
 bkt repo create <name>
 bkt repo create data-pipeline --description "Data ingestion pipeline"
@@ -87,6 +93,7 @@ bkt repo create frontend --workspace myteam --cloud-project PROJ
 ```
 
 Options:
+
 - `--project` / `--workspace` — Target location
 - `--description` — Repository description
 - `--public` — Create as public
@@ -95,6 +102,7 @@ Options:
 - `--scm` — SCM type (default: git)
 
 ### Clone and Browse
+
 ```bash
 bkt repo clone <slug>                     # Clone via HTTPS
 bkt repo clone <slug> --ssh               # Clone via SSH
@@ -107,6 +115,7 @@ bkt repo browse platform-api
 ## Pull Request Commands
 
 ### List and View
+
 ```bash
 bkt pr list                               # List open PRs
 bkt pr list --state OPEN                  # Filter by state (OPEN, MERGED, DECLINED)
@@ -118,6 +127,7 @@ bkt pr view 42 --web                      # Open in browser
 ```
 
 ### Create
+
 ```bash
 bkt pr create --title "feat: add caching" --source feature/cache --target main
 
@@ -135,11 +145,13 @@ bkt pr create \
 Required flags: `--title`, `--source`, `--target`
 
 Options:
+
 - `--description` — PR description
 - `--reviewer` — Reviewer username (repeatable)
 - `--close-source` — Close source branch on merge
 
 ### Edit
+
 ```bash
 bkt pr edit <id> --title "New title"
 bkt pr edit <id> --body "Updated description"
@@ -147,6 +159,7 @@ bkt pr edit <id> -t "Fix login bug" -b "Resolves session timeout issue"
 ```
 
 ### Review and Merge
+
 ```bash
 bkt pr approve <id>                       # Approve PR
 
@@ -158,11 +171,13 @@ bkt pr merge <id> --close-source=false    # Keep source branch
 ```
 
 Merge options:
+
 - `--message` — Merge commit message
 - `--strategy` — Merge strategy (e.g., `fast-forward`)
 - `--close-source` — Close source branch (default: true)
 
 ### Build/CI Checks
+
 ```bash
 bkt pr checks <id>                        # Show build status
 bkt pr checks <id> --wait                 # Wait for completion
@@ -174,6 +189,7 @@ bkt pr checks <id> --web                  # Open first build URL
 ```
 
 ### Checkout and Diff
+
 ```bash
 bkt pr checkout <id>                      # Fetch to pr/<id> branch
 bkt pr checkout <id> --branch my-review   # Custom local branch name
@@ -184,6 +200,7 @@ bkt pr diff <id> --stat                   # Show diff statistics
 ```
 
 ### Tasks (DC)
+
 ```bash
 bkt pr task list <id>                     # List tasks on a PR
 bkt pr task create <id> --text "Add tests"
@@ -192,12 +209,14 @@ bkt pr task reopen <id> <task-id>         # Reopen completed task
 ```
 
 ### Code Suggestions (DC)
+
 ```bash
 bkt pr suggestion <id> <comment-id> <suggestion-id>           # Apply a suggestion
 bkt pr suggestion <id> <comment-id> <suggestion-id> --preview # Preview only
 ```
 
 ### Auto-merge
+
 ```bash
 bkt pr auto-merge enable <id>             # Enable auto-merge when checks pass
 bkt pr auto-merge disable <id>            # Disable auto-merge
@@ -205,6 +224,7 @@ bkt pr auto-merge status <id>             # Check auto-merge status
 ```
 
 ### Reactions (DC)
+
 ```bash
 bkt pr reaction list <id> <comment-id>              # List reactions on a comment
 bkt pr reaction add <id> <comment-id> --emoji thumbsup
@@ -212,6 +232,7 @@ bkt pr reaction remove <id> <comment-id> --emoji thumbsup
 ```
 
 ### Reviewer Groups (DC)
+
 ```bash
 bkt pr reviewer-group list                          # List default reviewer groups
 bkt pr reviewer-group add <group>                   # Add group as default reviewer
@@ -221,6 +242,7 @@ bkt pr reviewer-group remove <group>                # Remove group from defaults
 ## Branch Commands
 
 ### List and Create
+
 ```bash
 bkt branch list
 bkt branch list --filter "feature/*"      # Filter by pattern
@@ -232,6 +254,7 @@ bkt branch create hotfix --from abc123 --message "Emergency fix"
 ```
 
 ### Delete and Manage
+
 ```bash
 bkt branch delete <name>
 bkt branch delete feature/old --dry-run   # Validate without deleting
@@ -240,6 +263,7 @@ bkt branch set-default <name>             # Set default branch (DC)
 ```
 
 ### Branch Protection (DC)
+
 ```bash
 bkt branch protect list                             # List branch restrictions
 bkt branch protect add <branch> --type <type>       # Add restriction
@@ -249,12 +273,14 @@ bkt branch protect remove <id>                      # Remove restriction by ID
 Protection types: `no-creates`, `no-deletes`, `fast-forward-only`, `require-approvals`
 
 Example:
+
 ```bash
 bkt branch protect add main --type fast-forward-only
 bkt branch protect add "release/*" --type require-approvals
 ```
 
 ### Rebase (DC)
+
 ```bash
 bkt branch rebase <branch>                # Rebase branch
 bkt branch rebase <branch> --interactive  # Interactive rebase
@@ -264,6 +290,7 @@ bkt branch rebase <branch> --no-fetch     # Skip fetch before rebase
 ## Issue Commands (Bitbucket Cloud Only)
 
 ### List and View
+
 ```bash
 bkt issue list                            # List open issues
 bkt issue list --state open               # Filter by state
@@ -281,6 +308,7 @@ Kinds: `bug`, `enhancement`, `proposal`, `task`
 Priorities: `trivial`, `minor`, `major`, `critical`, `blocker`
 
 ### Create and Edit
+
 ```bash
 bkt issue create -t "Title" -b "Description"
 bkt issue create -t "Login broken" -k bug -p major
@@ -292,6 +320,7 @@ bkt issue edit <id> --assignee "{uuid}"
 ```
 
 ### Lifecycle
+
 ```bash
 bkt issue close <id>                      # Close issue
 bkt issue reopen <id>                     # Reopen closed issue
@@ -300,6 +329,7 @@ bkt issue delete <id> --confirm           # Skip confirmation
 ```
 
 ### Comments and Status
+
 ```bash
 bkt issue comment <id> -b "Comment text"  # Add comment
 bkt issue comment <id> --list             # List comments
@@ -308,6 +338,7 @@ bkt issue status                          # Issues assigned to/created by you
 ```
 
 ### Attachments
+
 ```bash
 bkt issue attachment list <id>            # List attachments on an issue
 bkt issue attachment upload <id> <files>...  # Upload file(s)
@@ -335,6 +366,7 @@ bkt webhook test <id>                     # Trigger test delivery
 ```
 
 Options for `webhook create`:
+
 - `--name` — Webhook name (required)
 - `--url` — Callback URL (required)
 - `--event` — Events to subscribe to (required, repeatable)
@@ -365,6 +397,7 @@ bkt pipeline logs <uuid> --step <step-uuid>  # Specific step logs
 ## Permission Commands (DC)
 
 ### Project Permissions
+
 ```bash
 bkt perms project list --project DATA               # List project permissions
 bkt perms project grant --project DATA --user alice --perm PROJECT_WRITE
@@ -374,6 +407,7 @@ bkt perms project revoke --project DATA --user alice
 Project permissions: `PROJECT_READ`, `PROJECT_WRITE`, `PROJECT_ADMIN`
 
 ### Repository Permissions
+
 ```bash
 bkt perms repo list --project DATA --repo platform-api
 bkt perms repo grant --project DATA --repo api --user alice --perm REPO_WRITE
@@ -410,11 +444,13 @@ bkt project list --host bitbucket.example.com  # Override host
 ## Admin Commands (DC)
 
 ### Secrets Management
+
 ```bash
 bkt admin secrets rotate                  # Rotate encryption keys
 ```
 
 ### Logging Configuration
+
 ```bash
 bkt admin logging get                     # Show current logging config
 bkt admin logging set --level DEBUG       # Set logging level
@@ -444,6 +480,7 @@ bkt api /repositories/myteam/api/issues -X POST --input '{"title": "Bug report"}
 ```
 
 Options:
+
 - `--param key=value` / `-P` — Query parameter (repeatable)
 - `--field key=value` / `-F` — Request body field (repeatable)
 - `-X METHOD` — HTTP method (defaults to GET, or POST if body supplied)
@@ -463,6 +500,7 @@ bkt extension exec <name> -- --flag=1     # Execute extension
 ## Global Options
 
 All commands support:
+
 - `--json` — JSON output
 - `--yaml` — YAML output
 - `--context <name>` — Use specific context
@@ -474,5 +512,5 @@ All commands support:
 ## Environment Variables
 
 - `BKT_CONFIG_DIR` — Config directory override
-- `BKT_ALLOW_INSECURE_STORE` — Allow file-based credential storage (set to `1`)
+- `BKT_CREDENTIALS_PATH` — Credentials file path (defaults to `~/.bkt/credentials`)
 - `BKT_KEYRING_TIMEOUT` — Keyring operation timeout (for example `2m`)

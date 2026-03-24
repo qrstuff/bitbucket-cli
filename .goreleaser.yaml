@@ -24,7 +24,7 @@ builds:
       - -X github.com/avivsinai/bitbucket-cli/internal/build.versionFromLdflags={{.Version}}
       - -X github.com/avivsinai/bitbucket-cli/internal/build.commitFromLdflags={{.Commit}}
       - -X github.com/avivsinai/bitbucket-cli/internal/build.dateFromLdflags={{.Date}}
-    mod_timestamp: '{{ .CommitTimestamp }}'
+    mod_timestamp: "{{ .CommitTimestamp }}"
 
 archives:
   - id: bkt-archive
@@ -47,7 +47,7 @@ archives:
         format: zip
 
 checksum:
-  name_template: 'checksums.txt'
+  name_template: "checksums.txt"
   algorithm: sha256
 
 snapshot:
@@ -58,24 +58,24 @@ changelog:
   use: git
   filters:
     exclude:
-      - '^docs:'
-      - '^test:'
-      - '^ci:'
-      - '^chore:'
+      - "^docs:"
+      - "^test:"
+      - "^ci:"
+      - "^chore:"
       - Merge pull request
       - Merge remote-tracking branch
       - Merge branch
   groups:
-    - title: '🚀 Features'
+    - title: "🚀 Features"
       regexp: '^feat(\(.+\))?:'
       order: 0
-    - title: '🐛 Bug Fixes'
+    - title: "🐛 Bug Fixes"
       regexp: '^fix(\(.+\))?:'
       order: 1
-    - title: '📦 Dependencies'
+    - title: "📦 Dependencies"
       regexp: '^deps(\(.+\))?:'
       order: 2
-    - title: '🔧 Other Changes'
+    - title: "🔧 Other Changes"
       order: 999
 
 release:
@@ -125,7 +125,7 @@ sboms:
 nfpms:
   - id: deb
     package_name: bkt
-    file_name_template: 'bkt_{{ .Version }}_{{ .Arch }}'
+    file_name_template: "bkt_{{ .Version }}_{{ .Arch }}"
     formats: [deb]
     maintainer: Aviv Sinai <avivsinai@gmail.com>
     description: Bitbucket CLI
