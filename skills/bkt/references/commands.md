@@ -492,7 +492,7 @@ Options:
 ```bash
 bkt extension list                        # List installed extensions
 bkt extension install <repo>              # Install from GitHub
-bkt extension install avivsinai/bkt-hello
+bkt extension install qrstuff/bkt-hello
 bkt extension remove <name>
 bkt extension exec <name> -- --flag=1     # Execute extension
 ```

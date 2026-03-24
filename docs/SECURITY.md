@@ -34,4 +34,4 @@ implementation details.
 
 ## Contact
 
-Email **avivsinai@gmail.com**. We prefer coordinated disclosure.
+Email **qrstuff@gmail.com**. We prefer coordinated disclosure.

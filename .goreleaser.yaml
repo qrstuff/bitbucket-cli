@@ -21,9 +21,9 @@ builds:
       - -trimpath
     ldflags:
       - -s -w
-      - -X github.com/avivsinai/bitbucket-cli/internal/build.versionFromLdflags={{.Version}}
-      - -X github.com/avivsinai/bitbucket-cli/internal/build.commitFromLdflags={{.Commit}}
-      - -X github.com/avivsinai/bitbucket-cli/internal/build.dateFromLdflags={{.Date}}
+      - -X github.com/qrstuff/bitbucket-cli/internal/build.versionFromLdflags={{.Version}}
+      - -X github.com/qrstuff/bitbucket-cli/internal/build.commitFromLdflags={{.Commit}}
+      - -X github.com/qrstuff/bitbucket-cli/internal/build.dateFromLdflags={{.Date}}
     mod_timestamp: "{{ .CommitTimestamp }}"
 
 archives:
@@ -80,7 +80,7 @@ changelog:
 
 release:
   github:
-    owner: avivsinai
+    owner: qrstuff
     name: bitbucket-cli
   draft: false
   prerelease: auto
@@ -92,22 +92,22 @@ release:
   footer: |
     ---
 
-    **Full Changelog**: https://github.com/avivsinai/bitbucket-cli/compare/{{ .PreviousTag }}...{{ .Tag }}
+    **Full Changelog**: https://github.com/qrstuff/bitbucket-cli/compare/{{ .PreviousTag }}...{{ .Tag }}
 
     ### Homebrew (macOS/Linux)
     ```bash
-    brew install avivsinai/tap/bitbucket-cli
+    brew install qrstuff/tap/bitbucket-cli
     ```
 
     ### Scoop (Windows)
     ```powershell
-    scoop bucket add avivsinai https://github.com/avivsinai/scoop-bucket
+    scoop bucket add qrstuff https://github.com/qrstuff/scoop-bucket
     scoop install bitbucket-cli
     ```
 
     ### Go Install
     ```bash
-    go install github.com/avivsinai/bitbucket-cli/cmd/bkt@{{ .Tag }}
+    go install github.com/qrstuff/bitbucket-cli/cmd/bkt@{{ .Tag }}
     ```
 
     ### Binary Downloads
@@ -127,19 +127,19 @@ nfpms:
     package_name: bkt
     file_name_template: "bkt_{{ .Version }}_{{ .Arch }}"
     formats: [deb]
-    maintainer: Aviv Sinai <avivsinai@gmail.com>
+    maintainer: Aviv Sinai <qrstuff@gmail.com>
     description: Bitbucket CLI
-    homepage: https://github.com/avivsinai/bitbucket-cli
+    homepage: https://github.com/qrstuff/bitbucket-cli
     license: MIT
 
 brews:
   - name: bitbucket-cli
     repository:
-      owner: avivsinai
+      owner: qrstuff
       name: homebrew-tap
       token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
     directory: Formula
-    homepage: https://github.com/avivsinai/bitbucket-cli
+    homepage: https://github.com/qrstuff/bitbucket-cli
     description: "CLI for Bitbucket Cloud - manage repos, PRs, and pipelines from the terminal"
     license: MIT
     commit_author:
@@ -153,11 +153,11 @@ brews:
 scoops:
   - name: bitbucket-cli
     repository:
-      owner: avivsinai
+      owner: qrstuff
       name: scoop-bucket
       token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
     directory: bucket
-    homepage: https://github.com/avivsinai/bitbucket-cli
+    homepage: https://github.com/qrstuff/bitbucket-cli
     description: "CLI for Bitbucket Cloud & Data Center - manage repos, PRs, and pipelines"
     license: MIT
     commit_author:

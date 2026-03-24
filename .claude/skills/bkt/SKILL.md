@@ -23,10 +23,10 @@ If the command fails or `bkt` is not found, install it using one of these method
 
 | Platform    | Command                                                                                               |
 | ----------- | ----------------------------------------------------------------------------------------------------- |
-| macOS/Linux | `brew install avivsinai/tap/bitbucket-cli`                                                            |
-| Windows     | `scoop bucket add avivsinai https://github.com/avivsinai/scoop-bucket && scoop install bitbucket-cli` |
-| Go          | `go install github.com/avivsinai/bitbucket-cli/cmd/bkt@latest`                                        |
-| Binary      | Download from [GitHub Releases](https://github.com/avivsinai/bitbucket-cli/releases)                  |
+| macOS/Linux | `brew install qrstuff/tap/bitbucket-cli`                                                            |
+| Windows     | `scoop bucket add qrstuff https://github.com/qrstuff/scoop-bucket && scoop install bitbucket-cli` |
+| Go          | `go install github.com/qrstuff/bitbucket-cli/cmd/bkt@latest`                                        |
+| Binary      | Download from [GitHub Releases](https://github.com/qrstuff/bitbucket-cli/releases)                  |
 
 **Only proceed with `bkt` commands after confirming installation succeeds.**
 

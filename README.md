@@ -2,13 +2,13 @@
 
 <p align="center"><em>Bitbucket Cloud & Data Center workflows for developers, coding agents, and automation-first teams.</em></p>
 
-[![CI](https://github.com/avivsinai/bitbucket-cli/actions/workflows/ci.yml/badge.svg)](https://github.com/avivsinai/bitbucket-cli/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/gh/avivsinai/bitbucket-cli/graph/badge.svg)](https://codecov.io/gh/avivsinai/bitbucket-cli)
-[![Release](https://img.shields.io/github/v/release/avivsinai/bitbucket-cli?cache=none)](https://github.com/avivsinai/bitbucket-cli/releases)
-[![Go Report Card](https://goreportcard.com/badge/github.com/avivsinai/bitbucket-cli?cache=none)](https://goreportcard.com/report/github.com/avivsinai/bitbucket-cli)
-[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/avivsinai/bitbucket-cli/badge)](https://scorecard.dev/viewer/?uri=github.com/avivsinai/bitbucket-cli)
-[![Go Reference](https://pkg.go.dev/badge/github.com/avivsinai/bitbucket-cli.svg)](https://pkg.go.dev/github.com/avivsinai/bitbucket-cli)
-[![License](https://img.shields.io/github/license/avivsinai/bitbucket-cli?cache=none)](LICENSE)
+[![CI](https://github.com/qrstuff/bitbucket-cli/actions/workflows/ci.yml/badge.svg)](https://github.com/qrstuff/bitbucket-cli/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/qrstuff/bitbucket-cli/graph/badge.svg)](https://codecov.io/gh/qrstuff/bitbucket-cli)
+[![Release](https://img.shields.io/github/v/release/qrstuff/bitbucket-cli?cache=none)](https://github.com/qrstuff/bitbucket-cli/releases)
+[![Go Report Card](https://goreportcard.com/badge/github.com/qrstuff/bitbucket-cli?cache=none)](https://goreportcard.com/report/github.com/qrstuff/bitbucket-cli)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/qrstuff/bitbucket-cli/badge)](https://scorecard.dev/viewer/?uri=github.com/qrstuff/bitbucket-cli)
+[![Go Reference](https://pkg.go.dev/badge/github.com/qrstuff/bitbucket-cli.svg)](https://pkg.go.dev/github.com/qrstuff/bitbucket-cli)
+[![License](https://img.shields.io/github/license/qrstuff/bitbucket-cli?cache=none)](LICENSE)
 
 `bkt` is a stand-alone Bitbucket command-line interface that targets Bitbucket Data Center **and** Bitbucket Cloud. It mirrors the ergonomics of `gh` and delivers a consistent JSON/YAML contract for automation.
 
@@ -19,32 +19,32 @@
 ### Homebrew (macOS/Linux)
 
 ```bash
-brew install avivsinai/tap/bitbucket-cli
+brew install qrstuff/tap/bitbucket-cli
 ```
 
 ### Scoop (Windows)
 
 ```powershell
-scoop bucket add avivsinai https://github.com/avivsinai/scoop-bucket
+scoop bucket add qrstuff https://github.com/qrstuff/scoop-bucket
 scoop install bitbucket-cli
 ```
 
 ### Go Install
 
 ```bash
-go install github.com/avivsinai/bitbucket-cli/cmd/bkt@latest
+go install github.com/qrstuff/bitbucket-cli/cmd/bkt@latest
 ```
 
 This installs `bkt` to `$GOPATH/bin` (or `$HOME/go/bin` by default). Ensure the directory is in your `$PATH`.
 
 ### Binary Downloads
 
-Download pre-built binaries for your platform from the [releases page](https://github.com/avivsinai/bitbucket-cli/releases/latest).
+Download pre-built binaries for your platform from the [releases page](https://github.com/qrstuff/bitbucket-cli/releases/latest).
 
 ### From Source
 
 ```bash
-git clone https://github.com/avivsinai/bitbucket-cli.git
+git clone https://github.com/qrstuff/bitbucket-cli.git
 cd bitbucket-cli
 make build   # produces ./bin/bkt
 ./bin/bkt --help
@@ -60,7 +60,7 @@ Install the `bkt` skill to give Claude Code or Codex CLI native Bitbucket knowle
 Using [Vercel's skills CLI](https://github.com/vercel-labs/add-skill):
 
 ```bash
-npx skills add avivsinai/bitbucket-cli -g -y
+npx skills add qrstuff/bitbucket-cli -g -y
 ```
 
 </details>
@@ -69,7 +69,7 @@ npx skills add avivsinai/bitbucket-cli -g -y
 <summary><b>Via skild registry</b></summary>
 
 ```bash
-npx skild install @avivsinai/bkt -t claude -y
+npx skild install @qrstuff/bkt -t claude -y
 ```
 
 </details>
@@ -80,8 +80,8 @@ npx skild install @avivsinai/bkt -t claude -y
 > **Known Issue**: Claude Code uses SSH to clone marketplace repos, which fails without SSH keys configured. See [issue #14485](https://github.com/anthropics/claude-code/issues/14485). Use the skills or skild methods instead.
 
 ```bash
-/plugin marketplace add avivsinai/skills-marketplace
-/plugin install bkt@avivsinai-marketplace
+/plugin marketplace add qrstuff/skills-marketplace
+/plugin install bkt@qrstuff-marketplace
 ```
 
 </details>
@@ -90,7 +90,7 @@ npx skild install @avivsinai/bkt -t claude -y
 <summary><b>Manual install</b></summary>
 
 ```bash
-git clone https://github.com/avivsinai/bitbucket-cli.git
+git clone https://github.com/qrstuff/bitbucket-cli.git
 cp -r bitbucket-cli/.claude/skills/bkt ~/.claude/skills/
 ```
 
@@ -317,8 +317,8 @@ This outputs request method/URL and response status, useful for diagnosing API e
 
 ## Support
 
-- **Questions / Ideas**: File an [issue](https://github.com/avivsinai/bitbucket-cli/issues/new?template=feature_request.md)
-- **Bug Reports**: File an [issue](https://github.com/avivsinai/bitbucket-cli/issues/new?template=bug_report.md)
+- **Questions / Ideas**: File an [issue](https://github.com/qrstuff/bitbucket-cli/issues/new?template=feature_request.md)
+- **Bug Reports**: File an [issue](https://github.com/qrstuff/bitbucket-cli/issues/new?template=bug_report.md)
 
 ## License
 

@@ -63,7 +63,7 @@ jobs:
         run: |
           # Query the registry API for latest published version
           # distTags may be an array of {tag,version} or an object {latest:"x.y.z"}
-          REGISTRY_JSON=$(curl -sf "https://registry.skild.sh/skills/avivsinai/bkt?include=versions" || true)
+          REGISTRY_JSON=$(curl -sf "https://registry.skild.sh/skills/qrstuff/bkt?include=versions" || true)
           REGISTRY_VERSION=$(echo "$REGISTRY_JSON" \
             | jq -r '(.distTags | if type == "array" then [.[]|select(.tag=="latest")][0].version else .latest end) // empty' 2>/dev/null || true)
 
@@ -121,7 +121,7 @@ jobs:
           # leave the PR open for a maintainer to merge
           PR_URL=$(gh pr create \
             --title "chore(skill): bump SKILL.md to ${VERSION}" \
-            --body "Auto-generated after publishing \`@avivsinai/bkt@${VERSION}\` to the skill registry." \
+            --body "Auto-generated after publishing \`@qrstuff/bkt@${VERSION}\` to the skill registry." \
             --base master \
             --head chore/skill-version-bump)
 
