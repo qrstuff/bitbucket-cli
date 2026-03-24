@@ -1,13 +1,13 @@
 package factory
 
 import (
-	"github.com/avivsinai/bitbucket-cli/internal/config"
-	"github.com/avivsinai/bitbucket-cli/pkg/browser"
-	"github.com/avivsinai/bitbucket-cli/pkg/cmdutil"
-	"github.com/avivsinai/bitbucket-cli/pkg/iostreams"
-	"github.com/avivsinai/bitbucket-cli/pkg/pager"
-	"github.com/avivsinai/bitbucket-cli/pkg/progress"
-	"github.com/avivsinai/bitbucket-cli/pkg/prompter"
+	"github.com/qrstuff/bitbucket-cli/internal/config"
+	"github.com/qrstuff/bitbucket-cli/pkg/browser"
+	"github.com/qrstuff/bitbucket-cli/pkg/cmdutil"
+	"github.com/qrstuff/bitbucket-cli/pkg/iostreams"
+	"github.com/qrstuff/bitbucket-cli/pkg/pager"
+	"github.com/qrstuff/bitbucket-cli/pkg/progress"
+	"github.com/qrstuff/bitbucket-cli/pkg/prompter"
 )
 
 // New constructs a command factory following gh/jk idioms.

@@ -6,7 +6,7 @@ import (
 	"io"
 	"net/url"
 
-	"github.com/avivsinai/bitbucket-cli/pkg/httpx"
+	"github.com/qrstuff/bitbucket-cli/pkg/httpx"
 )
 
 // IssueAttachment represents an attachment on a Bitbucket Cloud issue.

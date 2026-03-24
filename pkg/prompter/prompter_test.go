@@ -8,7 +8,7 @@ import (
 	"testing"
 	"unsafe"
 
-	"github.com/avivsinai/bitbucket-cli/pkg/iostreams"
+	"github.com/qrstuff/bitbucket-cli/pkg/iostreams"
 )
 
 func TestConfirmRetriesOnInvalidInput(t *testing.T) {

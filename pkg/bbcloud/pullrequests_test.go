@@ -10,7 +10,7 @@ import (
 	"sync/atomic"
 	"testing"
 
-	"github.com/avivsinai/bitbucket-cli/pkg/bbcloud"
+	"github.com/qrstuff/bitbucket-cli/pkg/bbcloud"
 )
 
 func newTestClient(t *testing.T, handler http.Handler) *bbcloud.Client {

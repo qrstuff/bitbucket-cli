@@ -9,8 +9,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/avivsinai/bitbucket-cli/pkg/bbcloud"
-	"github.com/avivsinai/bitbucket-cli/pkg/cmdutil"
+	"github.com/qrstuff/bitbucket-cli/pkg/bbcloud"
+	"github.com/qrstuff/bitbucket-cli/pkg/cmdutil"
 )
 
 // NewCmdIssue wires issue subcommands.

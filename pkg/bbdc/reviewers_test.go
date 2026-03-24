@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/avivsinai/bitbucket-cli/pkg/bbdc"
+	"github.com/qrstuff/bitbucket-cli/pkg/bbdc"
 )
 
 func TestGetDefaultReviewers(t *testing.T) {

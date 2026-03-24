@@ -7,10 +7,10 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/avivsinai/bitbucket-cli/internal/config"
-	"github.com/avivsinai/bitbucket-cli/internal/secret"
-	"github.com/avivsinai/bitbucket-cli/pkg/cmdutil"
-	"github.com/avivsinai/bitbucket-cli/pkg/iostreams"
+	"github.com/qrstuff/bitbucket-cli/internal/config"
+	"github.com/qrstuff/bitbucket-cli/internal/secret"
+	"github.com/qrstuff/bitbucket-cli/pkg/cmdutil"
+	"github.com/qrstuff/bitbucket-cli/pkg/iostreams"
 )
 
 func TestCloudTokenURLIsAtlassian(t *testing.T) {

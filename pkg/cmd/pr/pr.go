@@ -16,12 +16,12 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/avivsinai/bitbucket-cli/internal/config"
-	"github.com/avivsinai/bitbucket-cli/pkg/bbcloud"
-	"github.com/avivsinai/bitbucket-cli/pkg/bbdc"
-	"github.com/avivsinai/bitbucket-cli/pkg/cmdutil"
-	"github.com/avivsinai/bitbucket-cli/pkg/iostreams"
-	"github.com/avivsinai/bitbucket-cli/pkg/types"
+	"github.com/qrstuff/bitbucket-cli/internal/config"
+	"github.com/qrstuff/bitbucket-cli/pkg/bbcloud"
+	"github.com/qrstuff/bitbucket-cli/pkg/bbdc"
+	"github.com/qrstuff/bitbucket-cli/pkg/cmdutil"
+	"github.com/qrstuff/bitbucket-cli/pkg/iostreams"
+	"github.com/qrstuff/bitbucket-cli/pkg/types"
 )
 
 const (
@@ -716,7 +716,7 @@ func runCreate(cmd *cobra.Command, f *cmdutil.Factory, opts *createOptions) erro
 		defer cancel()
 
 		if opts.WithDefaultReviewers {
-			return fmt.Errorf("--with-default-reviewers is not yet supported for Bitbucket Cloud (see https://github.com/avivsinai/bitbucket-cli/issues/67)")
+			return fmt.Errorf("--with-default-reviewers is not yet supported for Bitbucket Cloud (see https://github.com/qrstuff/bitbucket-cli/issues/67)")
 		}
 
 		pr, err := client.CreatePullRequest(ctx, workspace, repoSlug, bbcloud.CreatePullRequestInput{

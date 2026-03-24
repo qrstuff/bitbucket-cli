@@ -1,7 +1,7 @@
 package commit
 
 import (
-	"github.com/avivsinai/bitbucket-cli/pkg/cmdutil"
+	"github.com/qrstuff/bitbucket-cli/pkg/cmdutil"
 	"github.com/spf13/cobra"
 )
 

@@ -9,7 +9,7 @@ import (
 	"sync/atomic"
 	"testing"
 
-	"github.com/avivsinai/bitbucket-cli/pkg/httpx"
+	"github.com/qrstuff/bitbucket-cli/pkg/httpx"
 )
 
 func newTestClient(t *testing.T, handler http.Handler) *Client {

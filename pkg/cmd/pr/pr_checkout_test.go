@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/avivsinai/bitbucket-cli/pkg/bbcloud"
+	"github.com/qrstuff/bitbucket-cli/pkg/bbcloud"
 )
 
 func TestRepoCloneURL(t *testing.T) {
