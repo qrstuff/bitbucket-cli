@@ -16,8 +16,6 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-
-
 const (
 	// EnvToken is the environment variable for runtime token injection.
 	// When set, it bypasses the keyring entirely.
@@ -114,7 +112,7 @@ type Store struct {
 }
 
 type openOptions struct {
-	fileDir         string
+	fileDir string
 }
 
 // Option customises how the secret store is opened.
@@ -150,8 +148,6 @@ func Open(opts ...Option) (*Store, error) {
 	kr := &plaintextKeyring{path: settings.fileDir}
 	return &Store{kr: kr}, nil
 }
-
-
 
 // Set writes a secret value.
 func (s *Store) Set(key, value string) error {
